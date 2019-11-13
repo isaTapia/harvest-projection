@@ -1,0 +1,38 @@
+const ModelsFactory = require('./models-factory')
+const { Model } = require('mongoose')
+const Plot = require('../models/plot')
+
+
+
+
+const User = {
+  name: {
+    type: String,
+    required: true,
+    minlength: 3
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: 5,
+    trim: true,
+    validate: {
+      message: 'User email does not have the proper format',
+      validator: value => {
+        // No es mio, copiado de aqui: http://emailregex.com/
+        const emailRegex = 
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
+        const isValid = emailRegex.test(value)
+        return Promise.resolve(isValid)
+      }
+    }
+  },
+  password: {
+    type: String,
+    required: true
+  }
+}
+
+
+module.exports = ModelsFactory.createModel('User', User)
