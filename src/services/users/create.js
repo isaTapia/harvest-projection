@@ -15,13 +15,13 @@ module.exports = async function(request, response) {
       email: request.body.email,
       password: hash
     }
-    const createdUser = new User(data)
-    user = await createdUser.save()
+    let createdUser = new User(data)
+    createdUser = await createdUser.save()
     const result = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      plotsList: user.plotsList
+      _id: createdUser._id,
+      name: createdUser.name,
+      email: createdUser.email,
+      plotsList: createdUser.plotsList
     }
     response.json(result)
   } catch (error) {
