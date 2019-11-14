@@ -5,6 +5,8 @@ const ServicesFactory = require('../services-factory')
 
 
 
+// [TODO] invalidar viejo token despues de cambiar los datos del usuario y 
+// retornar un nuevo token con los datos nuevos
 module.exports = async function(request, response) {
   const handleException = ServicesFactory.createOnQueryRejectionCallback(response)
   try {
