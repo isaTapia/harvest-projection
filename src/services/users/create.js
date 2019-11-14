@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt')
 
 
 
+// [TODO] editar ServicesFactory para que reciba la proyeccion antes que los callbacks
 module.exports = function(request, response) {
   const onPasswordHashed = (error, hash) => {
     if (error) {
@@ -12,18 +13,30 @@ module.exports = function(request, response) {
       throw new Error('Failed to hash the user password')
     }
 
-    const createUser = ServicesFactory.createItemCreationService(
-      User, 
-      req => {
-        return {
-          name: req.body.name,
-          email: req.body.email,
-          password: hash
+    const onQueryRejection = ServicesFactory.createOnQueryRejectionCallback(response)
+    const onQueryFulfillment = document => {
+      if (document) {
+        const result = {}
+        const fieldsList = '_id name email'.split(' ')
+        for (field of fieldsList) {
+          result[field] = document.get(field)
         }
-      },
-      '_id name email'
-    )
-    createUser(request, response)
+        result['plotsList'] = []
+        response.json(result)
+      } else {
+        response.json(document)
+      }
+    }
+
+    const data = {
+      name: request.body.name,
+      email: request.body.email,
+      password: hash
+    }
+    const item = new User(data)
+    item.save()
+      .then(onQueryFulfillment)
+      .catch(onQueryRejection)
   }
 
   bcrypt.hash(request.body.password, 1, onPasswordHashed)
