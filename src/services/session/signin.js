@@ -15,7 +15,7 @@ module.exports = async function(request, response) {
     const searchCriteria = { email: request.body.email }
     const user = await User
       .findOne(searchCriteria, '_id name email password plotsList')
-      .populate('plotsList')
+      .populate('plotsList', '_id name latitude longitude')
 
     if (!user) {
       console.info(`User email '${request.body.email}' not found during authentication`)
