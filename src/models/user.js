@@ -1,6 +1,5 @@
 const ModelsFactory = require('./models-factory')
-const { Model } = require('mongoose')
-const Plot = require('../models/plot')
+const { Schema } = require('mongoose')
 
 
 
@@ -31,7 +30,12 @@ const User = {
   password: {
     type: String,
     required: true
-  }
+  },
+  plotsList: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Plot',
+    required: true
+  }]
 }
 
 

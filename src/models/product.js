@@ -1,18 +1,19 @@
 const ModelsFactory = require('./models-factory')
-const { ObjectId } = require('mongoose')
+const { Schema } = require('mongoose')
 
 
 
 
 const Product = {
-  userId: {
-    type: ObjectId,
-    required: true
-  },
   name: {
     type: String,
     required: true,
     minlength: 3
+  },
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
   maturingThreshold: {
     type: Number,
