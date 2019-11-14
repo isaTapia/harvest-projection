@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt')
 
 
 
-// [TODO] editar ServicesFactory para que reciba la proyeccion antes que los callbacks
 module.exports = ServicesFactory.createCustomService(async (request, response) => {
   const hash = await bcrypt.hash(request.body.password, 1)
   const data = {
