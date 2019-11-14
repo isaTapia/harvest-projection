@@ -1,5 +1,4 @@
 const User = require('../../models/user')
-const Plot = require('../../models/plot')
 const ServicesFactory = require('../services-factory')
 
 
