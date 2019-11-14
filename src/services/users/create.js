@@ -25,7 +25,6 @@ module.exports = async function(request, response) {
     }
     response.json(result)
   } catch (error) {
-    console.error(error)
     handleException(error)
   }
 }
