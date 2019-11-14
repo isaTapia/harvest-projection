@@ -4,9 +4,9 @@ const ServicesFactory = require('../services-factory')
 
 
 
-module.exports = ServicesFactory.createCustomService(async (request, response) => {
-  const id = request.decodedToken._id
-  const searchConditions = { owner: id }
-  const plotsList = await Plot.find(searchConditions, '_id name latitude longitude')
-  return { data: plotsList }
-})
+module.exports = ServicesFactory.createItemsListRetrievalService(
+  Plot, '_id name latitude longitude', 
+  request => {
+    return { owner: request.decodedToken._id }
+  }
+)
