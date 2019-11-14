@@ -9,17 +9,10 @@ module.exports = async function(request, response) {
   const handleException = ServicesFactory.createOnQueryRejectionCallback(response)
   try {
     const id = request.decodedToken._id
-    const data = {}
+    const data = request.body
 
-    const { name, email, password } = request.body
-    if (name) {
-      data.name = name
-    }
-    if (email) {
-      data.email = email
-    }
-    if (password) {
-      const hash = await bcrypt.hash(password, 1)
+    if (data.password) {
+      const hash = await bcrypt.hash(data.password, 1)
       data.password = hash
     }
 
