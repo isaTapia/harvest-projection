@@ -18,98 +18,75 @@ ServicesFactory.createOnQueryRejectionCallback = function(response) {
 
 
 
-ServicesFactory.createItemCreationService = function(model, getItemData, fieldsToReturn) {
-  return (request, response) => {
-    const onQueryRejection = ServicesFactory.createOnQueryRejectionCallback(response)
-    const onQueryFulfillment = document => {
-      if (document) {
-        const result = {}
-        const fieldsList = fieldsToReturn.split(' ')
-        for (field of fieldsList) {
-          result[field] = document.get(field)
-        }
-        response.json(result)
-      } else {
-        response.json(document)
-      }
+ServicesFactory.createCustomService = function(action) {
+  return async function(request, response) {
+    const handleError = ServicesFactory.createOnQueryRejectionCallback(response)
+    try {
+      const result = await action(request, response)
+      response.json(result)
+    } catch (error) {
+      handleError(error)
     }
+  }
+}
 
+
+
+ServicesFactory.createItemCreationService = function(model, fieldsFilter, getItemData) {
+  return ServicesFactory.createCustomService(async (request, response) => {
     const data = getItemData(request)
-    const item = new model(data)
-    item.save()
-      .then(onQueryFulfillment)
-      .catch(onQueryRejection)
-  }
+    let item = new model(data)
+    item = await item.save()
+    item = await model.findById(item._id, fieldsFilter)
+    return item
+  })
 }
 
 
 
-ServicesFactory.createSingleItemRetrievalService = function(model, getItemId, fieldsToReturn) {
-  return (request, response) => {
-    const onQueryRejection = ServicesFactory.createOnQueryRejectionCallback(response)
-    const onQueryFulfillment = ServicesFactory.createOnQueryFulfillmentCallback(response)
-    
+ServicesFactory.createSingleItemRetrievalService = function(model, fieldsFilter, getItemId) {
+  return ServicesFactory.createCustomService(async (request, response) => {
     const id = getItemId(request)
-    const options = { select: fieldsToReturn }
-    model.findById(id, null, options)
-      .then(onQueryFulfillment)
-      .catch(onQueryRejection)
-  }
+    const item = await model.findById(id, fieldsFilter)
+    return item
+  })
 }
 
 
 
-ServicesFactory.createItemsListRetrievalService = function(model, getQueryFilter, fieldsToReturn) {
-  return (request, response) => {
-    const onQueryRejection = ServicesFactory.createOnQueryRejectionCallback(response)
-    const onQueryFulfillment = ServicesFactory.createOnQueryFulfillmentCallback(response)
-
-    const filter = getQueryFilter(request)
-    const options = { select: fieldsToReturn }
-    model.find(filter, null, options)
-      .then(onQueryFulfillment)
-      .catch(onQueryRejection)
-  }
+ServicesFactory.createItemsListRetrievalService = function(model, fieldsFilter, getSearchConditions)
+{
+  return ServicesFactory.createCustomService(async (request, response) => {
+    const searchConditions = getSearchConditions(request)
+    const itemsList = await model.find(searchConditions, fieldsFilter)
+    return itemsList
+  })
 }
 
 
 
-ServicesFactory.createItemEditionService = function(
-  model, 
-  getItemData, 
-  fieldsToReturn,
-  getItemId = request => request.params.id, 
-) {
-  return (request, response) => {
-    const onQueryRejection = ServicesFactory.createOnQueryRejectionCallback(response)
-    const onQueryFulfillment = ServicesFactory.createOnQueryFulfillmentCallback(response)
-
-    const id = getItemId(request)
+ServicesFactory.createItemEditionService = function(model, fieldsFilter, getItemData) {
+  return ServicesFactory.createCustomService(async (request, response) => {
+    const id = request.params.id
     const data = getItemData(request)
     const options = { 
       new: true, 
-      select: fieldsToReturn,
+      select: fieldsFilter,
       omitUndefined: true
     }
-    model.findByIdAndUpdate(id, data, options)
-      .then(onQueryFulfillment)
-      .catch(onQueryRejection)
-  }
+    const item = await model.findByIdAndUpdate(id, data, options)
+    return item
+  })
 }
 
 
 
-ServicesFactory.createItemDeletionService = function(model, fieldsToReturn) {
-  return (request, response) => {
-    const onQueryRejection = ServicesFactory.createOnQueryRejectionCallback(response)
-    const onQueryFulfillment = ServicesFactory.createOnQueryFulfillmentCallback(response)
-
+ServicesFactory.createItemDeletionService = function(model, fieldsFilter) {
+  return ServicesFactory.createCustomService(async (request, response) => {
     const id = request.params.id
-    const options = { select: fieldsToReturn }
+    const options = { select: fieldsFilter }
     model.findByIdAndDelete(id, options)
-      .then(onQueryFulfillment)
-      .catch(onQueryRejection)
-  }
+  })
 }
 
 
