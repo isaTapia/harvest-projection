@@ -5,27 +5,32 @@ const ServicesFactory = require('../services-factory')
 
 
 
-module.exports = function(request, response) {
-  const onPasswordHashed = (error, hash) => {
-    if (error) {
-      console.error(error)
-      throw new Error('Failed to hash the user password')
+module.exports = async function(request, response) {
+  const handleException = ServicesFactory.createOnQueryRejectionCallback(response)
+  try {
+    const id = request.decodedToken._id
+    const data = {}
+
+    const { name, email, password } = request.body
+    if (name) {
+      data.name = name
+    }
+    if (email) {
+      data.email = email
+    }
+    if (password) {
+      const hash = await bcrypt.hash(password, 1)
+      data.password = hash
     }
 
-    const editUser = ServicesFactory.createItemEditionService(
-      User,
-      req => {
-        return {
-          name: req.body.name,
-          email: req.body.email,
-          password: hash
-        }
-      },
-      '_id name email',
-      req => req.decodedToken._id
-    )
-    editUser(request, response)
+    const options = {
+      new: true,
+      select: '_id name email plotsList',
+      omitUndefined: true
+    }
+    const user = await User.findByIdAndUpdate(id, data, options)
+    response.json(user)
+  } catch (error) {
+    handleException(error)
   }
-
-  bcrypt.hash(request.body.password, 1, onPasswordHashed)
 }
