@@ -17,4 +17,3 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   user.plotsList.pull(id)
   return await plot.remove()
 })
-ServicesFactory.createItemDeletionService(Plot, '_id name latitude longitude')
