@@ -41,4 +41,4 @@ const Product = {
 }
 
 
-module.exports = ModelsFactory.createModel('Plot', Plot)
+module.exports = ModelsFactory.createModel('Product', Product)

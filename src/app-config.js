@@ -3,6 +3,7 @@ const cors = require('cors')
 const userServicesRouter = require('./services/users/router')
 const sessionServicesRouter = require('./services/session/router')
 const plotServicesRouter = require('./services/plots/router')
+const productServicesRouter = require('./services/products/router')
 
 
 
@@ -17,9 +18,10 @@ app.use(express.json())  // recibimos objetos json en las peticiones
 app.use('/accounts', userServicesRouter)
 app.use('/session', sessionServicesRouter)
 app.use('/plots', plotServicesRouter)
+app.use('/products', productServicesRouter)
 
 
-const onServiceError = (error, request, response) => {
+const onServiceError = (error, request, response, next) => {
   console.error(error)
   response.status(500).json({
     name: error.name,

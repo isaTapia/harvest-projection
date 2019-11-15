@@ -18,7 +18,8 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     _id: createdUser._id,
     name: createdUser.name,
     email: createdUser.email,
-    plotsList: createdUser.plotsList
+    plotsList: createdUser.plotsList,
+    productsList: createdUser.productsList
   }
   return result
 })

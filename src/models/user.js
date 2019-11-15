@@ -35,6 +35,11 @@ const User = {
     type: Schema.Types.ObjectId,
     ref: 'Plot',
     required: true
+  }],
+  productsList: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
   }]
 }
 
