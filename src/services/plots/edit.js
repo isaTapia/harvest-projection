@@ -7,9 +7,9 @@ const ServicesFactory = require('../services-factory')
 module.exports = ServicesFactory.createCustomService(async (request, response) => {
   const id = request.params.id
   const userId = request.decodedToken._id
-  let plot = await Plot.findById(id)
+  const plot = await Plot.findById(id)
   if (plot.owner.toString() !== userId) {
-    throw new Error('Can\'t delete plots that do not belong to you')
+    throw new Error('Not allowed to edit a plot that is not yours')
   }
 
   const data = request.body
@@ -19,6 +19,5 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     omitUndefined: true
   }
 
-  const item = await Plot.findByIdAndUpdate(id, data, options)
-  return item
+  return await Plot.findByIdAndUpdate(id, data, options)
 })

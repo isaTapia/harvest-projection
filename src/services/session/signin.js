@@ -26,7 +26,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const config = {
     expiresIn: '1h'
   }
-  const token = webtoken.sign(user.toJSON(), process.env.JSON_WEB_TOKEN_SECRET_KEY, config)
+  const token = webtoken.sign(user._id, process.env.JSON_WEB_TOKEN_SECRET_KEY, config)
   const result = {
     token: token,
     _id: user._id,
