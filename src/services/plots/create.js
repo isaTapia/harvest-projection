@@ -5,7 +5,6 @@ const ServicesFactory = require('../services-factory')
 
 
 
-// [TODO] de nuevo, hay que editar el webtoken para agregar el cultivo creado
 module.exports = ServicesFactory.createCustomService(async (request, response) => {
   const data = request.body
   let plot = new Plot(data)
