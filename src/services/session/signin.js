@@ -24,10 +24,13 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     throw new Error('User authentication failed')
   }
 
-  const config = {
-    expiresIn: '1h'
+  const payload = {
+    _id: user._id
   }
-  const token = webtoken.sign(user._id, process.env.JSON_WEB_TOKEN_SECRET_KEY, config)
+  const config = {
+    expiresIn: '8h'
+  }
+  const token = webtoken.sign(payload, process.env.JSON_WEB_TOKEN_SECRET_KEY, config)
   const result = {
     token: token,
     _id: user._id,
