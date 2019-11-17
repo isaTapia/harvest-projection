@@ -40,6 +40,11 @@ const User = {
     type: Schema.Types.ObjectId,
     ref: 'Product',
     required: true
+  }],
+  cropsList: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Crop',
+    required: true
   }]
 }
 
