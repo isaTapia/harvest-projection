@@ -72,8 +72,8 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const cropData = { 
     plot: plotId, 
     product: productId, 
-    cultivationDate: cultivationDate, 
-    projectedHarvestDate: projectedHarvestDate 
+    cultivationDate: cultivationDate.format('YYYY-MM-DD'), 
+    projectedHarvestDate: projectedHarvestDate.format('YYYY-MM-DD')
   }
   let crop = new Crop(cropData)
   crop = await crop.save()

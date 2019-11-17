@@ -16,11 +16,11 @@ const Crop = {
     required: true
   },
   cultivationDate: {
-    type: Date,
+    type: String,
     required: true
   },
   projectedHarvestDate: {
-    type: Date,
+    type: String,
     required: true
   }
 }
