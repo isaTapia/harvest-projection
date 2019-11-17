@@ -8,8 +8,9 @@ const ServicesFactory = require('../services-factory')
 module.exports = ServicesFactory.createCustomService(async (request, response) => {
   const id = request.params.id
   const userId = request.decodedToken._id
-  const product = 
-    await Product.findById(id, '_id name owner maturingThreshold temperatureTolerance')
+  const product = await Product.findById(
+    id, '_id name owner maturingThreshold temperatureTolerance temperatureOptimum'
+  )
   if (product.owner.toString() !== userId) {
     throw new Error('Not allowed to delete a product that is not yours')
   }
