@@ -18,7 +18,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const plotId = data.plotId
   const plot = await Plot.findById(plotId, '_id name owner latitude longitude')
   if (plot.owner.toString() !== userId) {
-    throw new Error('Not allowed to create a crop for a plot that does not belong to you')
+    throw new Error('Not allowed to create a createdCrop for a plot that does not belong to you')
   }
 
   // revisamos que nos e este intentando utilizar un producto que no nos pertenece
@@ -27,7 +27,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     productId, '_id name owner maturityThreshold temperatureTolerance temperatureOptimum'
   )
   if (product.owner.toString() !== userId) {
-    throw new Error('Not allowed to create a crop for a product that does not belong to you')
+    throw new Error('Not allowed to create a createdCrop for a product that does not belong to you')
   }
 
   // obtenemos el historial del año pasado para esta parcela
@@ -75,12 +75,13 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     cultivationDate: cultivationDate.format('YYYY-MM-DD'), 
     projectedHarvestDate: projectedHarvestDate.format('YYYY-MM-DD')
   }
-  let crop = new Crop(cropData)
-  crop = await crop.save()
-  crop = await Crop.findById(crop._id, '_id plot product cultivationDate projectedHarvestDate')
+  let createdCrop = new Crop(cropData)
+  createdCrop = await createdCrop.save()
+  createdCrop = await Crop
+    .findById(createdCrop._id, '_id plot product cultivationDate projectedHarvestDate')
     .populate('plot', '_id name latitude longitude')
     .populate('product', '_id name temperatureTolerance temperatureOptimum')
-  return crop
+  return createdCrop
 })
 
 
