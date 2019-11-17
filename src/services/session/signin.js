@@ -28,7 +28,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     _id: user._id
   }
   const config = {
-    expiresIn: '8h'
+    expiresIn: '8h' // [TODO] la sesion permanece abierta por 8 horas
   }
   const token = webtoken.sign(payload, process.env.JSON_WEB_TOKEN_SECRET_KEY, config)
   const result = {
