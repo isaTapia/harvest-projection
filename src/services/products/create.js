@@ -19,7 +19,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   user.productsList.push(product._id)
   await user.save()
   product = await Product.findById(
-    product._id, '_id name maturingThreshold temperatureTolerance temperatureOptimum'
+    product._id, '_id name maturityThreshold temperatureTolerance temperatureOptimum'
   )
   return product
 })

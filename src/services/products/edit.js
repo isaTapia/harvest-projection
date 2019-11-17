@@ -15,7 +15,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const data = request.body
   const options = { 
     new: true, 
-    select: '_id name maturingThreshold temperatureTolerance temperatureOptimum',
+    select: '_id name maturityThreshold temperatureTolerance temperatureOptimum',
     omitUndefined: true
   }
 

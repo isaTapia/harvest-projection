@@ -15,7 +15,7 @@ const Product = {
     ref: 'User',
     required: true
   },
-  maturingThreshold: {
+  maturityThreshold: {
     type: Number,
     required: true,
     min: 0

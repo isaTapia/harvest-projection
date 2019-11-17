@@ -11,7 +11,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const user = await User
     .findOne(searchCriteria, '_id name email password plotsList')
     .populate('plotsList', '_id name latitude longitude')
-    .populate('productsList', '_id name maturingThreshold temperatureTolerance')
+    .populate('productsList', '_id name maturityThreshold temperatureTolerance')
 
   if (!user) {
     console.info(`User email '${request.body.email}' not found during authentication`)
