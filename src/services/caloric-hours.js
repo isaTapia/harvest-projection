@@ -12,9 +12,6 @@ const CaloricHoursCalculator = {
       const result = 0.5 * (max + min) - tolerance.min
       caloricHours = (result < 0) ? 0 : result
     }
-    if (isNaN(caloricHours)) {
-      console.debug(`${min}, ${max}, ${tolerance.min}, ${optimal.min}, ${optimal.max}, ${tolerance.max}`)
-    }
     return caloricHours
   },
   
