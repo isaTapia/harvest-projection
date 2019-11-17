@@ -4,6 +4,7 @@ const userServicesRouter = require('./services/users/router')
 const sessionServicesRouter = require('./services/session/router')
 const plotServicesRouter = require('./services/plots/router')
 const productServicesRouter = require('./services/products/router')
+const cropServicesRouter = require('./services/crops/router')
 
 
 
@@ -19,6 +20,7 @@ app.use('/accounts', userServicesRouter)
 app.use('/session', sessionServicesRouter)
 app.use('/plots', plotServicesRouter)
 app.use('/products', productServicesRouter)
+app.use('/crops', cropServicesRouter)
 
 
 const onServiceError = (error, request, response, next) => {
