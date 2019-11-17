@@ -34,9 +34,27 @@ const Product = {
       }
     },
     validate: {
-      message: 'temperatureToleranceMax must be greater than temperatureToleranceMin',
+      message: 'TemperatureToleranceMax must be greater than TemperatureToleranceMin',
       validator: value => Promise.resolve(value.min < value.max)
     }
+  },
+  temperatureOptimum: {
+    type: {
+      min: {
+        type: Number,
+        required: true,
+        min: 0
+      },
+      max: {
+        type: Number,
+        required: true,
+        min: 0
+      }
+    },
+    validate: {
+      message: 'TemperatureOptimalMax must be greater than TemperatureToleranceMin',
+      validator: value => Promise.resolve(value.min < value.max)
+    } 
   }
 }
 
