@@ -34,17 +34,20 @@ const User = {
   plotsList: [{
     type: Schema.Types.ObjectId,
     ref: 'Plot',
-    required: true
+    required: true,
+    default: []
   }],
   productsList: [{
     type: Schema.Types.ObjectId,
     ref: 'Product',
-    required: true
+    required: true,
+    default: []
   }],
   cropsList: [{
     type: Schema.Types.ObjectId,
     ref: 'Crop',
-    required: true
+    required: true,
+    default: []
   }]
 }
 
