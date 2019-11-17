@@ -13,5 +13,5 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     .populate('productsList', '_id name maturityThreshold temperatureTolerance temperatureOptimum')
   const cropsList = await CropsListService.getCropsList(request, response)
   user.cropsList = cropsList
-  response.json(user)
+  return user
 })
