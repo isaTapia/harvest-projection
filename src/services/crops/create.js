@@ -70,6 +70,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   // se crea el cultivo utilizando la proyección obtenida
   const projectedHarvestDate = moment(cultivationDate).add(projection.daysForMaturity, 'days')
   const cropData = { 
+    owner: userId,
     plot: plotId, 
     product: productId, 
     cultivationDate: cultivationDate.format('YYYY-MM-DD'), 

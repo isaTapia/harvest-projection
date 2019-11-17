@@ -5,6 +5,11 @@ const { Schema } = require('mongoose')
 
 
 const Crop = {
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   plot: {
     type: Schema.Types.ObjectId,
     ref: 'Plot',
