@@ -6,6 +6,7 @@ const got = require('got')
 const moment = require('moment')
 const CaloricHoursCalculator = require('../caloric-hours')
 const Crop = require('../../models/crop')
+const User = require('../../models/user')
 
 
 
@@ -76,13 +77,16 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     cultivationDate: cultivationDate.format('YYYY-MM-DD'), 
     projectedHarvestDate: projectedHarvestDate.format('YYYY-MM-DD')
   }
-  let createdCrop = new Crop(cropData)
-  createdCrop = await createdCrop.save()
-  createdCrop = await Crop
-    .findById(createdCrop._id, '_id plot product cultivationDate projectedHarvestDate')
+  let crop = new Crop(cropData)
+  crop = await crop.save()
+  const user = await User.findById(userId).populate('cropsList')
+  user.cropsList.push(crop._id)
+  await user.save()
+  crop = await Crop
+    .findById(crop._id, '_id plot product cultivationDate projectedHarvestDate')
     .populate('plot', '_id name latitude longitude')
     .populate('product', '_id name temperatureTolerance temperatureOptimum')
-  return createdCrop
+  return crop
 })
 
 
