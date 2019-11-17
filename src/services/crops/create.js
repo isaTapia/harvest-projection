@@ -83,7 +83,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   user.cropsList.push(crop._id)
   await user.save()
   crop = await Crop
-    .findById(crop._id, '_id plot product cultivationDate projectedHarvestDate')
+    .findById(crop._id, '_id plot product cultivationDate projectedHarvestDate updatedAt')
     .populate('plot', '_id name latitude longitude')
     .populate('product', '_id name temperatureTolerance temperatureOptimum')
   return crop
