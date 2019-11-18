@@ -22,6 +22,7 @@ const CaloricHoursCalculator = {
       daysForMaturity: 0
     }
     let current = start
+    const startingYear = current.year()
     let reachedMaturity = false
     while (!reachedMaturity) {
       weather = dailyWeather.find(day => day.time === current.unix())
@@ -37,6 +38,11 @@ const CaloricHoursCalculator = {
       }
       current = current.add(1, 'days')
       reachedMaturity = product.maturityThreshold <= projection.caloricHoursSum
+
+      // si se nos acabaron los datos historicos, regresa al inicio del año
+      if (current.year() > startingYear) {
+        current.subtract(1, 'year')
+      }
     }
     return projection
   }

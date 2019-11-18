@@ -32,10 +32,15 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     expiresIn: '8h' // [TODO] la sesion permanece abierta por 8 horas
   }
   const token = webtoken.sign(payload, process.env.JSON_WEB_TOKEN_SECRET_KEY, config)
-  user.token = token
-
   request.decodedToken = { _id: user._id }
   const cropsList = await CropsListService.getCropsList(request, response)
-  user.cropsList = cropsList
-  return user
+  return {
+    token: token,
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    plotsList: user.plotsList,
+    productsList: user.productsList,
+    cropsList: cropsList
+  }
 })
