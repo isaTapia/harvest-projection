@@ -7,6 +7,7 @@ const CaloricHoursCalculator = require('../caloric-hours')
 const Crop = require('../../models/crop')
 const User = require('../../models/user')
 const WeatherHistoryFactory = require('../weather-history')
+const createError = require('../../create-error')
 
 
 
@@ -19,10 +20,10 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const plotId = data.plotId
   const plot = await Plot.findById(plotId, '_id name owner latitude longitude')
   if (!plot) {
-    throw new Error('Invalid plot ID provided')
+    throw createError('InvalidId', 'Provided plotId does not match any plot owned by you', 400)
   }
   if (plot.owner.toString() !== userId) {
-    throw new Error('Not allowed to create a crop for a plot that is not yours')
+    throw createError('InvalidId', 'Provided plotId does not match any plot owned by you', 400)
   }
 
   // revisamos que nos e este intentando utilizar un producto que no nos pertenece
@@ -31,17 +32,29 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     productId, '_id name owner maturityThreshold temperatureTolerance temperatureOptimum'
   )
   if (!product) {
-    throw new Error('Invalid product ID provided')
+    throw createError(
+      'InvalidId', 
+      'Provided productId does not match any product owned by you', 
+      400
+    )
   }
   if (product.owner.toString() !== userId) {
-    throw new Error('Not allowed to create a crop for a product that is not yours')
+    throw createError(
+      'InvalidId', 
+      'Provided productId does not match any product owned by you', 
+      400
+    )
   }
 
   // revisamos que no se intente generar una proyección de algún año pasado o futuro
   const cultivationDate = moment(data.cultivationDate)
   const currentYear = moment().year()
   if (cultivationDate.year() !== currentYear) {
-    throw new Error('Invalid date; provide a date corresponding to the current year')
+    throw createError(
+      'InvalidDate', 
+      'Value of cultivationDate must correspond to a date of the current year', 
+      400
+    )
   }
   const lastYear = currentYear - 1
 

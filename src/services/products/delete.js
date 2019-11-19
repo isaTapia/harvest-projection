@@ -1,6 +1,7 @@
 const Product = require('../../models/product')
 const User = require('../../models/user')
 const ServicesFactory = require('../services-factory')
+const createError = require('../../create-error')
 
 
 
@@ -11,8 +12,19 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const product = await Product.findById(
     id, '_id name owner maturityThreshold temperatureTolerance temperatureOptimum'
   )
+  if (!product) {
+    throw createError(
+      'InvalidId', 
+      'Provided productId does not match any product owned by you', 
+      400
+    )
+  }
   if (product.owner.toString() !== userId) {
-    throw new Error('Not allowed to delete a product that is not yours')
+    throw createError(
+      'InvalidId', 
+      'Provided productId does not match any product owned by you', 
+      400
+    )
   }
 
   const user = await User.findById(userId)

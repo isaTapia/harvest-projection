@@ -1,6 +1,7 @@
 const Crop = require('../../models/crop')
 const User = require('../../models/user')
 const ServicesFactory = require('../services-factory')
+const createError = require('../../create-error')
 
 
 
@@ -12,8 +13,11 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     .findById(id, '_id owner plot product cultivationDate projectedHarvestDate')
     .populate('plot', '_id name latitude longitude')
     .populate('product', '_id name maturityThreshold temperatureTolreance temperatureOptimum')
+  if (!crop) {
+    throw createError('InvalidId', 'Provided cropId does not match any crop owned by you', 400)
+  }
   if (crop.owner.toString() !== userId) {
-    throw new Error('Not allowed to delete a crop that is not yours')
+    throw createError('InvalidId', 'Provided cropId does not match any crop owned by you', 400)
   }
 
   const user = await User.findById(userId)

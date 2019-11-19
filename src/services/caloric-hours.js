@@ -1,4 +1,5 @@
 const moment = require('moment')
+const createError = require('../create-error')
 
 
 
@@ -32,7 +33,11 @@ const CaloricHoursCalculator = {
     let i = 0
     while (!reachedMaturity) {
       if (i++ > 365) {
-        throw new Error('Infinite loop detected... this wasn\'t supposed to happen...')
+        throw createError(
+          'InfiniteLoop',
+          'Infinite loop detected; historical data missing, unable to compute harvest projection',
+          508
+        )
       }
       weather = dailyWeather.find(day => 
         moment(day.time * 1000).format('YYYY-MM-DD') === current.format('YYYY-MM-DD')

@@ -1,11 +1,15 @@
 const mongoose = require('mongoose')
+const createError = require('./create-error')
 
 
 
 
 const hostUri = process.env.MONGODB_URI
 if (!hostUri) {
-  throw new Error('No value assigned to MONGODB_URI field in the .env file')
+  throw createError(
+    'MissingEnvVar',
+    'No value assigned to MONGODB_URI field in the .env file'
+  )
 }
 
 const connectionOptions = {

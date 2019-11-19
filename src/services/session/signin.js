@@ -3,6 +3,7 @@ const ServicesFactory = require('../services-factory')
 const bcrypt = require('bcrypt')
 const webtoken = require('jsonwebtoken')
 const CropsListService = require('../crops/retrieve-list')
+const createError = require('../../create-error')
 
 
 
@@ -16,13 +17,13 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
 
   if (!user) {
     console.info(`User email '${request.body.email}' not found during authentication`)
-    throw new Error('User authentication failed')
+    createError('AuthFail', 'User authentication failed', 400)
   }
 
   const areEqual = await bcrypt.compare(request.body.password, user.password)
   if (!areEqual) {
     console.info(`User '${request.body.email}' password is not correct`)
-    throw new Error('User authentication failed')
+    createError('AuthFail', 'User authentication failed', 400)
   }
 
   const payload = {
