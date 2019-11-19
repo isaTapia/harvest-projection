@@ -14,6 +14,6 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   }
   let user = new User(data)
   await user.save()
-  user = await User.findById(user._id, '_id name email plotsList productsList cropsList')
+  user = await User.findById(user._id, '_id name email')
   return user
 })
