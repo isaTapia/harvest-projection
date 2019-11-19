@@ -28,6 +28,9 @@ El proceso normal con el cual uno trabaja con este API consiste de los sig. paso
 5. Para comenzar a generar proyecciones el usuario debe [registrar un cultivo](#crear-un-nuevo-cultivo) eligiendo únicamente una parcela y un producto de aquellos que tiene registrados.
 6. Para obtener la fecha de cosecha proyectada más reciente de sus cultivos, basta con que el usuario solicite periódicamente (normalmente diario) la [lista de todos sus cultivos registrados](#obtener-la-lista-de-todos-los-cultivos). Al hacer esto, el API automáticamente revisará y actualizará las proyecciones de cada cultivo del usuario para retornar la proyección más reciente. 
 
+**Importante**
+> Cabe mencionar que ya existe registrado en el API un usuario de prueba y se recomienda utilizarlo. Para iniciar sesión con la cuenta de este usuario de prueba, utilice el correo electrónico `test@fake.email.com` y la contraseña `cicese`.
+
 ## Interactuando con el API
 El API siempre responderá a toda petición recibida con un JSON válido que puede representar un _objeto_ o un _arreglo_ de datos cuyo contenido y su formato dependen del recurso solicitado.
 
@@ -145,7 +148,7 @@ Para editar los datos de la cuenta de usuario, principalmente el correo electró
 Es importante mencionar que no es necesario proveer todos los datos de entrada de este servicio, únicamente aquellos que se desean editar; el API mantendrá intactos aquellos campos para los cuales no se proveyó un nuevo valor. Por ejemplo, si se desea editar la contraseña, basta con enviar un JSON con contenga únicamente `{ "password": "..." }`.
 
 ## Crear una nueva Parcela
-Las parcelas representan los lugares geográficos donde físicamente se plantará el cultivo cuya fecha de cosecha se desea rastrear. Cada usuario puede tener registrado cualquier cantidad de parcelas que desee. Para registrar una nueva parcela, se tiene el sig. servicio.
+Las parcelas representan los lugares geográficos donde físicamente se cultivarán hortalizas. Cada usuario puede tener registrado cualquier cantidad de parcelas que desee. Los datos de una parcela consisten principalmente de las coordenadas geográficas donde se encuentra. Dichas coordenadas son utilizadas por el API para recuperar los datos meteorológicos (históricos y actuales) del lugar donde se encuentra la parcela para después calcular la cantidad de horas calóricas producidas cada día. Para registrar una nueva parcela, se tiene el sig. servicio.
 
 **POST** `http://harvest-projection.herokuapp.com/plots`
 #### Encabezados
@@ -246,4 +249,38 @@ Para borrar una parcela se tiene el sig. servicio.
 Si una parcela está actualmente siendo utilizada por algún cultivo, entonces la parcela **no** puede borrarse.
 
 # Crear un nuevo Producto
-Los productos representan las hortalizas que pueden ser plantadas en una parcela para iniciar un cultivo. Cada usuario puede tener registrado cualquier cantidad de productos que desee. 
+Los productos representan las hortalizas que pueden ser cultivadas en una parcela. Cada usuario puede tener registrado cualquier cantidad de productos que desee. La teoría dice que, una vez que una hortaliza es plantada para su cultivo, su crecimiento diario es directamente proporcional a la cantidad de horas calóricas que absorbió cada día. Dichas horas calóricas son acumulables. Así, la hortaliza alcanza la madurez una vez que la cantidad de horas calóricas que fueron acumuladas por la planta cruza un umbral determinado. Los principales datos de un producto son: 
+
+- Un **intervalo de temperatura de tolerancia**, esto es, los límites de temperatura máximo y mínimo dentro de los cuáles la planta puede absorber horas calóricas. Si la temperatura de un día particular no está dentro de estos límites, la planta _no_ absorbe horas calóricas.
+- Un **intervalo de temperatura óptima**, esto es, los límites de temperatura máximo y mínimo dentro de los cuáles la planta absorbe la mayor cantidad de horas calóricas posibles. Si la temperatura de un día particular no está dentro de estos límites, la planta aún puede absorber horas calóricas pero en una cantidad limitada.
+- Un **umbral de madurez**, esto es, la cantidad total de horas calóricas que la planta necesita absorber a lo largo del tiempo para alcanzar la madurez. 
+
+Para crear un nuevo producto, el API ofrece el sig. servicio.
+
+**POST** `http://harvest-projection.herokuapp.com/products`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+|`Content-Type`|`application/json`|
+
+#### Cuerpo
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`name`|`string`|El nombre con el que se identificará el producto. Debe ser de al menos 3 caracteres de largo.|
+|`maturityThreshold`|`number`|El umbral de madurez del producto (en horas calóricas).|
+|`temperatureTolerance`|`object`|Los límites mínimo y máximo de temperatura tolerable para el producto (en grados Celsius). Estos se agrupan en un objeto JSON que posee dos atributos: `min` y `max`, respectivamente.|
+|`temperatureOptimum`|`object`|Los límites mínimo y máximo de temperatura óptima para el producto (en grados Celsius). Estos se agrupan en un objeto JSON que posee dos atributos: `min` y `max` respectivamente.|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica el producto creado.|
+|`name`|`string`|El nombre del producto creado.|
+|`maturityThreshold`|`number`|El umbral de madurez del producto creado.|
+|`temperatureTolerance`|`object`|El margen de temperatura tolerable del producto creado.|
+|`temperatureOptimum`|`object`|El margen de temperatura óptima del producto creado.|
+
+**Importante**
+> El usuario de prueba ya tiene un producto registrado correspondiente al tomate.
+
