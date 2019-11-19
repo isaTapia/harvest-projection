@@ -32,9 +32,8 @@ const CaloricHoursCalculator = {
     let i = 0
     while (!reachedMaturity) {
       if (i++ > 365) {
-        throw new Error('Infinite loop detected')
+        throw new Error('Infinite loop detected... this wasn\'t supposed to happen...')
       }
-      console.debug(`Attempting to find ${current.format('YYYY-MM-DD')}`)
       weather = dailyWeather.find(day => 
         moment(day.time * 1000).format('YYYY-MM-DD') === current.format('YYYY-MM-DD')
       )
