@@ -29,7 +29,8 @@ const User = {
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    minlength: 6
   },
   plotsList: [{
     type: Schema.Types.ObjectId,
