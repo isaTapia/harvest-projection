@@ -24,16 +24,11 @@ const CaloricHoursCalculator = {
     let current = start
     const startingYear = current.year()
     let reachedMaturity = false
-    let debugCount = 0
     while (!reachedMaturity) {
-      ++debugCount
-      if (debugCount > 365) {
-        throw new Error('Debug failed!!!!')
-      }
-      weather = dailyWeather.find(day => day.time === current.unix())
-      console.debug(weather)
+      weather = dailyWeather.find(day => 
+        moment(day.time).format('YYYY-MM-DD') === current.format('YYYY-MM-DD')
+      )
       if (weather && weather.temperatureMin && weather.temperatureMax) {
-        console.debug(`Computing for ${current.format('YYYY-MM-DD')}`)
         const caloricHours = CaloricHoursCalculator.computeForSingleDay(
           weather.temperatureMin, 
           weather.temperatureMax, 
@@ -42,6 +37,8 @@ const CaloricHoursCalculator = {
         )
         projection.caloricHoursSum += caloricHours
         projection.daysForMaturity++
+      } else {
+        throw new Error('Fatal error, historical weather data is missing')
       }
       current = current.add(1, 'days')
       reachedMaturity = product.maturityThreshold <= projection.caloricHoursSum
