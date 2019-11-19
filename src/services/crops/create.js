@@ -18,6 +18,9 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   // revisamos que no se este intentando utilizar una parcela que no nos pertenece
   const plotId = data.plotId
   const plot = await Plot.findById(plotId, '_id name owner latitude longitude')
+  if (!plot) {
+    throw new Error('Invalid plot ID provided')
+  }
   if (plot.owner.toString() !== userId) {
     throw new Error('Not allowed to create a crop for a plot that is not yours')
   }
@@ -27,6 +30,9 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const product = await Product.findById(
     productId, '_id name owner maturityThreshold temperatureTolerance temperatureOptimum'
   )
+  if (!product) {
+    throw new Error('Invalid product ID provided')
+  }
   if (product.owner.toString() !== userId) {
     throw new Error('Not allowed to create a crop for a product that is not yours')
   }
@@ -62,7 +68,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
 
   // utilizando los datos climatológicos del año anterior, generamos la primera proyección
   const startDate = moment(cultivationDate).subtract(1, 'years')
-  console.debug('Computing initial crop projection')
+  console.debug(`Computing initial crop projection for ${startDate.format('YYYY-MM-DD')}`)
   const projection = CaloricHoursCalculator.computeAccumulationUntilMaturity(
     product, 
     startDate, 
