@@ -29,7 +29,11 @@ const CaloricHoursCalculator = {
     let current = start
     const startingYear = current.year()
     let reachedMaturity = false
+    let i = 0
     while (!reachedMaturity) {
+      if (i++ > 365) {
+        throw new Error('Infinite loop detected')
+      }
       weather = dailyWeather.find(day => 
         moment(day.time).format('YYYY-MM-DD') === current.format('YYYY-MM-DD')
       )
@@ -42,8 +46,6 @@ const CaloricHoursCalculator = {
         )
         projection.caloricHoursSum += caloricHours
         projection.daysForMaturity++
-      } else {
-        throw new Error('Fatal error, historical weather data is missing')
       }
       current = current.add(1, 'days')
       reachedMaturity = product.maturityThreshold <= projection.caloricHoursSum
