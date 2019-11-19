@@ -104,9 +104,9 @@ Para editar los datos de la cuenta de usuario, principalmente el correo electró
 #### Cuerpo
 |Atributo|Tipo|Descripción|
 |-|-|-|
-|`name`|`string`|El nombre completo del usuario.|
-|`email`|`string`|El correo electrónico del usuario.|
-|`password`|`string`|La contraseña de acceso a la cuenta de usuario.|
+|`name`|`string`|El nuevo nombre para el usuario.|
+|`email`|`string`|El nuevo correo electrónico del usuario.|
+|`password`|`string`|La nueva contraseña de acceso a la cuenta de usuario.|
 
 #### Respuesta
 |Atributo|Tipo|Descripción|
@@ -117,3 +117,103 @@ Para editar los datos de la cuenta de usuario, principalmente el correo electró
 
 Es importante mencionar que no es necesario proveer todos los datos de entrada de este servicio, únicamente aquellos que se desean editar; el API mantendrá intactos aquellos campos para los cuales no se proveyó un nuevo valor. Por ejemplo, si se desea editar la contraseña, basta con enviar un JSON con contenga únicamente `{ "password": "..." }`.
 
+## Crear una nueva Parcela
+Las parcelas representan los lugares geográficos donde físicamente se realizará el cultivo cuyo fecha de cosecha se desea rastrear. Cada usuario puede tener registrado cualquier cantidad de parcelas que desee. Para registrar una nueva parcela, se tiene el sig. servicio.
+
+**POST** `http://harvest-projection.herokuapp.com/plots`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+|`Content-Type`|`application/json`|
+
+#### Cuerpo
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`name`|`string`|El nombre con el que se identificará la parcela. Debe ser de al menos 3 caracteres de largo.|
+|`latitude`|`number`|La coordenada de latitud (en grados) donde se encuentra la parcela.|
+|`longitude`|`number`|La coordenada de longitud (en grados) donde se encuentra la parcela.|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica la parcela creada.|
+|`name`|`string`|El nombre de la parcela creada.|
+|`latitude`|`number`|La coordenada de latitud (en grados) donde se encuentra la parcela.|
+|`longitude`|`number`|La coordenada de longitud (en grados) donde se encuentra la parcela.|
+
+## Obtener la lista de todas las Parcelas
+Para obtener la lista de todas las parcelas que tiene registradas el usuario, se puede utilizar el sig. servicio. 
+
+**GET** `http://harvest-projection.herokuapp.com/plots`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+
+#### Respuesta
+Este servicio responderá con un arreglo que contiene los datos de todas las parcelas individuales. Dicho arreglo puede estar vacío si el usuario no tiene ninguna parcela registrada. Cada elemento en el arreglo está constituido por los sig. datos:
+
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica la parcela.|
+|`name`|`string`|El nombre de la parcela.|
+|`latitude`|`number`|La coordenada de latitud donde se encuentra la parcela.|
+|`longitude`|`number`|La coordenada de longitud donde se encuentra la parcela.|
+
+**Importante**
+> El usuario de prueba ya contiene 3 parcelas registradas, una correspondiente a Maneadero, una para Ojos Negros y una más para San Quintín; estas son regiones agrículas en el municipio de Ensenada. En el caso de Maneadero y Ojos Negros, estas son regiones que se encuentran en la periferia de la ciudad de Ensenada.
+
+## Editar los datos de una Parcela
+Para editar los datos de una parcela, principalmente sus coordenadas, se puede utilizar el sig. servicio.
+
+**PUT** `http://harvest-projection.herokuapp.com/plots/<id de la parcela>`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+|`Content-Type`|`application/json`|
+
+#### Cuerpo
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`name`|`string`|El nuevo nombre de la parcela.|
+|`latitude`|`number`|La nueva coordenada de latitud para la parcela.|
+|`longitude`|`number`|La nueva coordenada de longitud para la parcela.|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica la parcela.|
+|`name`|`string`|El nuevo nombre de la parcela.|
+|`latitude`|`number`|La nueva latitud de la parcela.|
+|`longitude`|`number`|La nueva longitud de la parcela.|
+
+Si las coordenadas de una parcela son editadas, todas las proyecciones de los cultivos relacionados con esa parcela se veerán afectadas. Si bien, las proyecciones no se ajustan inmediatamente después de realizar la edición de coordenadas, las nuevas coordenadas entrarán en juego en el próximo ajuste de la proyección correspondiente. 
+
+## Borrar una Parcela
+Para borrar una parcela se tiene el sig. servicio.
+
+**DELETE** `http://harvest-projection.herokuapp.com/plots/<id de la parcela>`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+
+#### Cuerpo
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`name`|`string`|El nuevo nombre de la parcela.|
+|`latitude`|`number`|La nueva coordenada de latitud para la parcela.|
+|`longitude`|`number`|La nueva coordenada de longitud para la parcela.|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|La cadena hash que identificaba la parcela.|
+|`owner`|`string`|Una cadena hash que identifica al usuario al que pertenecía la parcela borrada.|
+|`name`|`string`|El nombre de la parcela borrada.|
+|`latitude`|`number`|La latitud de la parcela borrada.|
+|`longitude`|`number`|La longitud de la parcela borrada.|
+
+Si una parcela forma parte de un cultivo activo, esto es, un cultivo cuya fecha proyectada para el inicio de la cosecha corresponde a una fecha en el futuro, la parcela **no** se puede borrar. Tampoco es posible borrar parcelas que pertenecen a 3ros usuarios. 
