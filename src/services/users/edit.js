@@ -18,7 +18,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
 
   const options = {
     new: true,
-    select: '_id name email plotsList',
+    select: '_id name email',
     omitUndefined: true
   }
   const user = await User.findByIdAndUpdate(id, data, options)
