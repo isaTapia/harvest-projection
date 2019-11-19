@@ -12,7 +12,7 @@ ServicesFactory.createOnQueryRejectionCallback = function(response) {
       name: error.name,
       message: error.message
     }
-    response.status(500).json(report)
+    response.status(error.code).json(report)
   }
 }
 

@@ -1,7 +1,9 @@
 const Plot = require('../../models/plot')
 const User = require('../../models/user')
+const Crop = require('../../models/crop')
 const ServicesFactory = require('../services-factory')
 const createError = require('../../create-error')
+const moment = require('moment')
 
 
 
@@ -15,6 +17,22 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   }
   if (plot.owner.toString() !== userId) {
     throw createError('InvalidId', 'Provided plotId does not match any plot owned by you', 400)
+  }
+
+  const searchFilter = { plot: plot._id }
+  const cropsList = await Crop.find(searchFilter)
+  if (cropsList) {
+    const today = moment()
+    const activeCrops = cropsList.find(
+      crop => today.unix()<= moment(crop.projectedHarvestDate).unix()
+    )
+    if (activeCrops) {
+      throw createError(
+        'DeletionDenied', 
+        'Unable to delete plot; there are active crops using it',
+        400
+      )
+    }
   }
 
   const user = await User.findById(userId)
