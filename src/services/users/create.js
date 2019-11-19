@@ -12,14 +12,8 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     email: request.body.email,
     password: hash
   }
-  let createdUser = new User(data)
-  createdUser = await createdUser.save()
-  const result = {
-    _id: createdUser._id,
-    name: createdUser.name,
-    email: createdUser.email,
-    plotsList: createdUser.plotsList,
-    productsList: createdUser.productsList
-  }
-  return result
+  let user = new User(data)
+  await user.save()
+  user = await User.findById(user._id, '_id name email plotsList productsList cropsList')
+  return user
 })
