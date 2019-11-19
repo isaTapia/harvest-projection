@@ -34,9 +34,10 @@ const CaloricHoursCalculator = {
       if (i++ > 365) {
         throw new Error('Infinite loop detected')
       }
-      weather = dailyWeather.find(day => 
-        moment(day.time).format('YYYY-MM-DD') === current.format('YYYY-MM-DD')
-      )
+      weather = dailyWeather.find(day => {
+        console.debug(`${moment(day.time).format('YYYY-MM-DD')}, ${current.format('YYYY-MM-DD')}`)
+        return moment(day.time).format('YYYY-MM-DD') === current.format('YYYY-MM-DD')
+      })
       if (weather && weather.temperatureMin && weather.temperatureMax) {
         const caloricHours = CaloricHoursCalculator.computeForSingleDay(
           weather.temperatureMin, 
