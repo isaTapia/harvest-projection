@@ -1,6 +1,17 @@
 # Harvest Projection
 Proyecto final para la materia de sistemas distribuidos. Este API permite estimar la fecha aproximada de cuándo comenzará la cosecha de un cultivo de hortalizas por medio del cálculo de horas calóricas absorbidas diariamente. 
 
+## Contenido
+- [Interactuando con el API](#interactuando-con-el-api)
+- [Crear una Cuenta de Usuario](#crear-una-cuenta-de-usuario)
+- [Iniciar Sesión](#iniciar-sesion)
+- [Recuperar todos los datos del Usuario](#recuperar-todos-los-datos-de-usuario)
+- [Editar los datos de la Cuenta de Usuario](#editar-los-datos-de-la-cuenta-de-usuario)
+- [Crear una nueva Parcela](#crear-una-nueva-parcela)
+- [Obtener la lista de todas las Parcelas](#obtener-la-lista-de-todas-las-parcelas)
+- [Editar los datos de una Parcela](#editar-los-datos-de-una-parcela)
+- [Borrar una Parcela](#borrar-una-parcela)
+
 ## Interactuando con el API
 El servidor siempre responde con un JSON válido que puede representar un objeto o un arreglo de datos cuyo contenido y su formato dependen del recurso solicitado.
 
