@@ -1,3 +1,8 @@
+const moment = require('moment')
+
+
+
+
 const CaloricHoursCalculator = {
 
   computeForSingleDay: function(min, max, tolerance, optimal) {
