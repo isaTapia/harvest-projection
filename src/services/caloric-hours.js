@@ -27,6 +27,7 @@ const CaloricHoursCalculator = {
     while (!reachedMaturity) {
       weather = dailyWeather.find(day => day.time === current.unix())
       if (weather && weather.temperatureMin && weather.temperatureMax) {
+        console.debug(`Computing for ${current.format('YYYY-MM-DD')}`)
         const caloricHours = CaloricHoursCalculator.computeForSingleDay(
           weather.temperatureMin, 
           weather.temperatureMax, 

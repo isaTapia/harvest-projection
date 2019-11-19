@@ -62,7 +62,7 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
 
   // utilizando los datos climatológicos del año anterior, generamos la primera proyección
   const startDate = moment(cultivationDate).subtract(1, 'years')
-  console.info('Computing initial crop projection')
+  console.debug('Computing initial crop projection')
   const projection = CaloricHoursCalculator.computeAccumulationUntilMaturity(
     product, 
     startDate, 
