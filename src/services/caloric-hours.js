@@ -24,9 +24,14 @@ const CaloricHoursCalculator = {
     let current = start
     const startingYear = current.year()
     let reachedMaturity = false
+    let debugCount = 0
     while (!reachedMaturity) {
+      ++debugCount
+      if (debugCount > 365) {
+        throw new Error('Debug failed!!!!')
+      }
       weather = dailyWeather.find(day => day.time === current.unix())
-      console.debug('?')
+      console.debug(weather)
       if (weather && weather.temperatureMin && weather.temperatureMax) {
         console.debug(`Computing for ${current.format('YYYY-MM-DD')}`)
         const caloricHours = CaloricHoursCalculator.computeForSingleDay(
