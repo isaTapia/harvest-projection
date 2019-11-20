@@ -32,17 +32,11 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const searchFilter = { product: product._id }
   const cropsList = await Crop.find(searchFilter)
   if (cropsList) {
-    const today = moment()
-    const activeCrops = cropsList.find(
-      crop => today.unix() <= moment(crop.projectedHarvestDate).unix()
+    throw createError(
+      'DeletionDenied',
+      'Unable to delete product; there are active crops using it',
+      400
     )
-    if (activeCrops) {
-      throw createError(
-        'DeletionDenied',
-        'Unable to delete product; there are active crops using it',
-        400
-      )
-    }
   }
 
   const user = await User.findById(userId)
