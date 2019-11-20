@@ -11,7 +11,7 @@ WeatherHistoryFactory.fetchWeatherData = async function(latitude, longitude, dat
   const url = 
     `https://api.darksky.net/forecast/${apiKey}/${latitude},${longitude},${date}?units=si&exclude=[alerts,flags,minutely,hourly]`
   const response = await got(url)
-  console.info(`Fetched ${moment(date * 1000).format('YYYY-MM-DD')}`)
+  // console.info(`Fetched ${moment(date * 1000).format('YYYY-MM-DD')}`)
   return JSON.parse(response.body)
 }
 

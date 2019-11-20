@@ -16,13 +16,11 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
     .populate('productsList', '_id name maturityThreshold temperatureTolerance temperatureOptimum')
 
   if (!user) {
-    console.info(`User email '${request.body.email}' not found during authentication`)
     createError('AuthFail', 'User authentication failed', 400)
   }
 
   const areEqual = await bcrypt.compare(request.body.password, user.password)
   if (!areEqual) {
-    console.info(`User '${request.body.email}' password is not correct`)
     createError('AuthFail', 'User authentication failed', 400)
   }
 
