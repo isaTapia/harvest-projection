@@ -29,7 +29,7 @@ Proyecto final para la materia de sistemas distribuidos. Este API permite estima
 El proceso normal con el cual uno trabaja con este API consiste de los sig. pasos:
 
 1. El usuario [registra una cuenta](#crear-una-cuenta-de-usuario) proveyendo su nombre, un correo electrónico y una contraseña. Las últimas dos serán sus **credenciales de autentificación**.
-2. El usuario se [autentifica](#iniciar-sesion) con estas credenciales, a lo cual el API responde con un _JSON web token_. A partir de ése momento en adelante, el usuario debe incluir dicho _token_ en cada petición que envía al API. 
+2. El usuario se [autentifica](#iniciar-sesión) con estas credenciales, a lo cual el API responde con un _JSON web token_. A partir de ése momento en adelante, el usuario debe incluir dicho _token_ en cada petición que envía al API. 
 3. El usuario [registra una parcela](#crear-una-nueva-parcela) (en caso de no tener ninguna registrada). 
 4. El usuario [registra un producto](#crear-un-nuevo-producto) (en caso de no tener ninguno registrado). 
 5. Para comenzar a generar proyecciones el usuario debe [registrar un cultivo](#crear-un-nuevo-cultivo) eligiendo únicamente una parcela y un producto de aquellos que tiene registrados.
