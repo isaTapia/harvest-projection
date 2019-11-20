@@ -17,6 +17,9 @@ Proyecto final para la materia de sistemas distribuidos. Este API permite estima
   - [Borrar una Parcela](#borrar-una-parcela)
 - Productos
   - [Crear un nuevo Producto](#crear-un-nuevo-producto)
+  - [Obtener la lista de todos los Productos](#obtener-la-lista-de-todos-los-productos)
+  - [Editar los datos de un Producto](#editar-los-datos-de-un-producto)
+  - [Borrar un Producto](#borrar-un-producto)
 
 ## ¿Cómo se utiliza el API?
 El proceso normal con el cual uno trabaja con este API consiste de los sig. pasos:
@@ -219,6 +222,8 @@ Para editar los datos de una parcela, principalmente sus coordenadas, se puede u
 |`latitude`|`number`|La nueva latitud de la parcela.|
 |`longitude`|`number`|La nueva longitud de la parcela.|
 
+Observe que no es necesario proveer todos los datos descritos como entrada, solamente aquellos que se desean editar. Por ejemplo, digamos que sólo se desea editar el nombre de una parcela, basta con que el JSON de entrada incluya únicamente: `{ "name": "..." }`.
+
 Si las coordenadas de una parcela son editadas, todas las proyecciones de los cultivos relacionados con esa parcela se veerán afectadas. Si bien, las proyecciones no se ajustan inmediatamente después de realizar la edición de coordenadas, las nuevas coordenadas entrarán en juego en el próximo ajuste de la proyección correspondiente. 
 
 ## Borrar una Parcela
@@ -229,13 +234,6 @@ Para borrar una parcela se tiene el sig. servicio.
 |Encabezado|Valor|
 |-|-|
 |`Authorization`|`Bearer <token>`|
-
-#### Cuerpo
-|Atributo|Tipo|Descripción|
-|-|-|-|
-|`name`|`string`|El nuevo nombre de la parcela.|
-|`latitude`|`number`|La nueva coordenada de latitud para la parcela.|
-|`longitude`|`number`|La nueva coordenada de longitud para la parcela.|
 
 #### Respuesta
 |Atributo|Tipo|Descripción|
@@ -282,5 +280,75 @@ Para crear un nuevo producto, el API ofrece el sig. servicio.
 |`temperatureOptimum`|`object`|El margen de temperatura óptima del producto creado.|
 
 **Importante**
-> El usuario de prueba ya tiene un producto registrado correspondiente al tomate.
+> El usuario de prueba ya tiene un producto registrado llamado Tomate.
 
+## Obtener la lista de todos los Productos
+Para obtener la lista de todos los productos que tiene registrados el usuario, se puede utilizar el sig. servicio. 
+
+**GET** `http://harvest-projection.herokuapp.com/products`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+
+#### Respuesta
+Este servicio responderá con un arreglo que contiene los datos de todos los productos individuales. Dicho arreglo puede estar vacío si el usuario no tiene ningún producto registrada. Cada elemento en el arreglo está constituido por los sig. datos:
+
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica el producto.|
+|`name`|`string`|El nombre del producto.|
+|`maturityThreshold`|`number`|El umbral de madurez del producto.|
+|`temperatureTolerance`|`object`|El margen de temperatura tolerable del producto.|
+|`temperatureOptimum`|`object`|El margen de temperatura óptima del producto.|
+
+## Editar los datos de un Producto
+Para editar los datos de un producto, principalmente su umbral de madurez y tolerancias de temperatura, se puede utilizar el sig. servicio.
+
+**PUT** `http://harvest-projection.herokuapp.com/productos/<id del producto>`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+|`Content-Type`|`application/json`|
+
+#### Cuerpo
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`name`|`string`|El nuevo nombre para el producto.|
+|`maturityThreshold`|`number`|El nuevo umbral de madurez para el producto.|
+|`temperatureTolerance`|`object`|El nuevo margen de temperatura tolerable para el producto.|
+|`temperatureOptimum`|`object`|El nuevo margen de temperatura óptima para el producto.|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica el producto.|
+|`name`|`string`|El nuevo nombre para el producto.|
+|`maturityThreshold`|`number`|El nuevo umbral de madurez para el producto.|
+|`temperatureTolerance`|`object`|El nuevo margen de temperatura tolerable para el producto.|
+|`temperatureOptimum`|`object`|El nuevo margen de temperatura óptima para el producto.|
+
+No es necesario proveer todos los datos de entrada descritos, solamente aquellos que se desean editar. Por ejemplo, digamos que sólo se desea editar el nombre de una parcela, basta con que el JSON de entrada incluya únicamente: `{ "name": "..." }`.
+Si se editan los datos de un cultivo, las proyecciones de los cultivos que hagan uso de él se veerán afectadas. Si bien, las proyecciones no se ajustan inmediatamente después de realizar la edición, sí se utilizarán los nuevos valores en el próximo ajuste de la proyección correspondiente. 
+
+## Borrar un Producto
+Para borrar un producto se tiene el sig. servicio.
+
+**DELETE** `http://harvest-projection.herokuapp.com/products/<id de la parcela>`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|La cadena hash que identificaba el producto borrado.|
+|`name`|`string`|El nombre del producto borrado.|
+|`owner`|`string`|Una cadena hash que identifica al usuario al que pertenecía el producto borrado.|
+|`maturityThreshold`|`number`|El umbral de madurez del producto borrado.|
+|`temperatureTolerance`|`object`|El margen de temperatura tolerable del producto borrado.|
+|`temperatureOptimum`|`object`|El margen de temperatura óptima del producto borrado.|
+
+El producto **no** puede ser borrado si actualmente está siendo utilizado por algún cultivo.
