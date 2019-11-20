@@ -3,7 +3,7 @@ Proyecto final para la materia de sistemas distribuidos. Este API permite estima
 
 ## Contenido
 - General
-  - [¿Cómo se utiliza el API?](#como-se-utiliza-el-api)  
+  - **[Guía rápida de cómo utilizar el API](#guia-rapida-de-como-utilizar-el-api)**
   - [Interactuando con el API](#interactuando-con-el-api)
 - Cuentas de Usuario
   - [Crear una Cuenta de Usuario](#crear-una-cuenta-de-usuario)
@@ -20,16 +20,22 @@ Proyecto final para la materia de sistemas distribuidos. Este API permite estima
   - [Obtener la lista de todos los Productos](#obtener-la-lista-de-todos-los-productos)
   - [Editar los datos de un Producto](#editar-los-datos-de-un-producto)
   - [Borrar un Producto](#borrar-un-producto)
+- Cultivos
+  - [Crear un nuevo Cultivo](#crear-un-cultivo)
+  - [Obtener la lista de todos los Cultivos](#obtener-la-lista-de-todos-los-cultivos)
+  - [Borrar un Cultivo](#borrar-un-cultivo)
 
-## ¿Cómo se utiliza el API?
+## Guía rápida de cómo utilizar el API
 El proceso normal con el cual uno trabaja con este API consiste de los sig. pasos:
 
 1. El usuario [registra una cuenta](#crear-una-cuenta-de-usuario) proveyendo su nombre, un correo electrónico y una contraseña. Las últimas dos serán sus **credenciales de autentificación**.
-2. El usuario se [autentifica](#iniciar-sesion) estas credenciales, a lo cual el API responde con un _JSON web token_. A partir de ése momento en adelante, el usuario debe incluir dicho _token_ en cada petición que envía al API. 
+2. El usuario se [autentifica](#iniciar-sesion) con estas credenciales, a lo cual el API responde con un _JSON web token_. A partir de ése momento en adelante, el usuario debe incluir dicho _token_ en cada petición que envía al API. 
 3. El usuario [registra una parcela](#crear-una-nueva-parcela) (en caso de no tener ninguna registrada). 
 4. El usuario [registra un producto](#crear-un-nuevo-producto) (en caso de no tener ninguno registrado). 
 5. Para comenzar a generar proyecciones el usuario debe [registrar un cultivo](#crear-un-nuevo-cultivo) eligiendo únicamente una parcela y un producto de aquellos que tiene registrados.
 6. Para obtener la fecha de cosecha proyectada más reciente de sus cultivos, basta con que el usuario solicite periódicamente (normalmente diario) la [lista de todos sus cultivos registrados](#obtener-la-lista-de-todos-los-cultivos). Al hacer esto, el API automáticamente revisará y actualizará las proyecciones de cada cultivo del usuario para retornar la proyección más reciente. 
+
+El resto de los servicios del API no incluidos en esta lista simplemente son aquellos que permiten realizar opreaciones CRUD sobre los recursos ya mencionados.
 
 **Importante**
 > Cabe mencionar que ya existe registrado en el API un usuario de prueba y se recomienda utilizarlo. Para iniciar sesión con la cuenta de este usuario de prueba, utilice el correo electrónico `test@fake.email.com` y la contraseña `cicese`.
@@ -352,3 +358,83 @@ Para borrar un producto se tiene el sig. servicio.
 |`temperatureOptimum`|`object`|El margen de temperatura óptima del producto borrado.|
 
 El producto **no** puede ser borrado si actualmente está siendo utilizado por algún cultivo.
+
+## Crear un nuevo Cultivo
+Los cultivos representan las parcelas que actualmente están plantadas con hortalizas que serán cosechadas una vez que maduren, es decir, _un cultivo es la combinación entre una parcela y un producto_. El API calcula la fecha estimada de inicio de cosecha utilizando las coordenadas geográficas de la parcela obtiene los datos metorológicos del lugar donde se encuentra y después combina dichos datos con las tolerancias de temperatura del producto para calcular la cantidad de horas calóricas que fueron generadas cada día, desde la fecha en que se plantaron las semillas del cultivo hasta que el total de horas calóricas acumuladas es mayor o igual al umbral de madurez del producto. Una vez que se cruzó el umbral, se cuentan cuántos días pasaron para llegar a dicho humbral y el resultado se suma a la fecha de inicio del cultivo. El resultado final es la fecha en la que se estima el usuario puede comenzar a cosechar el producto maduro. 
+
+Este proceso es completamente automático, pero para iniciarlo, el usuario debe registrar un cultivo. Para ello, el API ofrece el sig. servicio. 
+
+**POST** `http://harvest-projection.herokuapp.com/crops`
+
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+|`Content-Type`|`application/json`|
+
+#### Cuerpo
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`cultivationDate`|`string`|La fecha de inicio del cultivo; esto es, la fecha en la que se plantaron las semillas. No necesariamente tiene que ser la fecha actual, puede ser una fecha anterior, pero sólo se permiten fechas del **año actual**. Debe tener el formato `AAAA-MM-DD`.|
+|`plotId`|`string`|La cadena hash que identifica la parcela para la cual se registrará el cultivo.|
+|`productId`|`string`|La cadena hash que identifica el producto para el cual se registrará el cultivo.|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|Una cadena hash que identifica el cultivo creado.|
+|`plot`|`object`|Los datos de la parcela registrada al cultivo creado encapsulados en un objeto JSON. Los datos retornados son `_id`, `name`, `latitude` y `longitude`.|
+|`product`|`object`|Los datos del producto registrado al cultivo creado encapsulados en un objeto JSON. Los datos retornados son `_id`, `name`, `maturityThreshold`, `temperatureTolerance` y `temperatureOptimum`.|
+|`cultivationDate`|`string`|La fecha en la que se inició el cultivo creado (no necesariamente es la misma que la fecha en que se _registró_ el cultivo). Sigue el formato `AAAA-MM-DD`.|
+|`projectedHarvestDate`|`string`|La fecha en la que se estima se podrá comenzar a cosechar el producto cultivado. Sigue el formato `AAAA-MM-DD`.|
+|`updatedAt`|`string`|La fecha y hora en la que se actualizó por última vez la fecha proyectada de cosecha, según el huso horario del servidor. Sigue un formato de fecha estándar.|
+
+Cuando se registra un cultivo nuevo, la fecha de cosecha proyectada se calcula completamente utilizando datos meteorológicos del año anterior. Subsecuentes ajustes a la fecha de cosecha proyectada se calcularán utilizando los datos meteorológicos del año presente hasta la fecha más actual disponible y el resto de las horas calóricas necesarias para cruzar el umbral se calcularán de nuevo utilizando datos meteorológicos del año anterior.
+
+**Importante**
+> Cabe mencionar que los datos meteorológicos se obtienen del servicio [Dark Sky](https://darksky.net/dev/docs#time-machine-request), los cuales permiten únicamente 1000 peticiones gratuitas al día. Para hacer el uso más eficiente de esta cantidad limitada de peticiones, el API almacena en la base de datos cada dato recuperado de Dark Sky. Sin embargo, dichos datos se asocian con las coordenadas geográficas a las que corresponden. Debido a esto, cuando se crea un cultivo de una parcela cuyos datos meteorológicos no han sido recuperados aún de Dark Sky, el API recurrirá a descargar un año completo de datos meteorológicos diarios, lo que tiene dos consecuencias potencialmente negativas: a) el API podrá tardar un par de minutos en responder, potencialmente excediendo el tiempo de espera del cliente/servidor y b) se podrían agotar las peticiones diarias gratuitas de Dark Sky antes de que se recuperen todos los datos necesarios. Debido a esto, _se recomienda al usuario utilizar únicamente las parcelas que tiene registrado el usuario de prueba_, el API ya tiene almacenados los datos meteorológicos de estas parcelas.
+
+## Obtener la lista de todos los Cultivos
+Para obtener la lista de todos los cultivos registrados, el API ofrece el sig. servicio.
+
+**GET** `http://harvest-projection.herokuapp.com/crops`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+
+#### Respuesta
+Este servicio responderá con un arreglo que contiene los datos de todos los cultivos individuales. Dicho arreglo puede estar vacío si el usuario no tiene ningún cultivo registrado. Cada elemento en el arreglo está constituido por los sig. datos:
+
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|La cadena hash que identifica el cultivo.|
+|`plot`|`object`|Los datos de la parcela registrada al cultivo encapsulados en un objeto JSON. Dichos datos son `_id`, `name`, `latitude` y `longitude`.|
+|`product`|`object`|Los datos del producto registrado al cultivo encapsulados en un objeto JSON. Dichos datos son `_id`, `name`, `maturityThreshold`, `temperatureTolerance` y `temperatureOptimum`.|
+|`cultivationDate`|`string`|La fecha de inicio del cultivo. Sigue el formato `AAAA-MM-DD`.|
+|`projectedHarvestDate`|`string`|La fecha en la que se estima se podrá comenzar a cosechar el producto cultivado. Sigue el formato `AAAA-MM-DD`.|
+|`updatedAt`|`string`|La fecha y hora en la que se actualizó por última vez la fecha proyectada de cosecha, según el huso horario del servidor. Sigue un formato de fecha estándar.|
+
+Este servicio no solamente retorna la lista de cultivos registrados, sino que además revisa primero la última fecha de actualización de cada uno de ellos. Si dicha fecha no es la fecha actual, entonces el API calcula la fecha de cosecha proyectada utilizando los datos más recientes disponibles. Esto garantiza que la fecha de cosecha proyectada que el usuario recibe como respuesta es siempre la estimación más reciente.  
+
+## Borrar un Cultivo
+Para borrar un cultivo se tiene el sig. servicio.
+
+**DELETE** `http://harvest-projection.herokuapp.com/crops/<id del cultivo>`
+#### Encabezados
+|Encabezado|Valor|
+|-|-|
+|`Authorization`|`Bearer <token>`|
+
+#### Respuesta
+|Atributo|Tipo|Descripción|
+|-|-|-|
+|`_id`|`string`|La cadena hash que identificaba al cultivo borrado.|
+|`owner`|`string`|Una cadena hash que identifica al usuario al que pertenecía el cultivo borrado.|
+|`plot`|`object`|Los datos de la parcela registrada al cultivo borrado encapsulados en un objeto JSON. Dichos datos son `_id`, `name`, `latitude` y `longitude`.|
+|`product`|`object`|Los datos del producto registrado al cultivo borrado encapsulados en un objeto JSON. Dichos datos son `_id`, `name`, `maturityThreshold`, `temperatureTolerance` y `temperatureOptimum`.|
+|`cultivationDate`|`string`|La fecha de inicio del cultivo borrado. Sigue el formato `AAAA-MM-DD`.|
+|`projectedHarvestDate`|`string`|La última fecha en la que se estimaba se podía comenzar a cosechar el producto cultivado. Sigue el formato `AAAA-MM-DD`.|
+|`updatedAt`|`string`|La fecha y hora en la que se actualizó por última vez la fecha proyectada de cosecha, según el huso horario del servidor. Sigue un formato de fecha estándar.|
+
+Este servicio borra únicamente el cultivo, los datos de la parcela y el producto asociados con él, así como tambiénm los datos meteorológicos utilizados, **no** son borrados, sino que permanecen intactos.
