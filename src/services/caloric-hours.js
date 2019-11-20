@@ -32,8 +32,7 @@ const CaloricHoursCalculator = {
     let reachedMaturity = false
     let i = 0
     while (!reachedMaturity) {
-      if (i++ > 365) {
-        console.debug(`${projection.caloricHoursSum}, ${product.maturityThreshold}`)
+      if (i++ > 730) {
         throw createError(
           'InfiniteLoop',
           'Infinite loop detected; historical data missing, unable to compute harvest projection',
