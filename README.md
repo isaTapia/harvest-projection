@@ -7,7 +7,7 @@ Proyecto final para la materia de sistemas distribuidos. Este API permite estima
   - [Interactuando con el API](#interactuando-con-el-api)
 - Cuentas de Usuario
   - [Crear una Cuenta de Usuario](#crear-una-cuenta-de-usuario)
-  - [Iniciar Sesión](#iniciar-sesion)
+  - [Iniciar Sesión](#iniciar-sesión)
   - [Recuperar todos los datos del Usuario](#recuperar-todos-los-datos-de-usuario)
   - [Editar los datos de la Cuenta de Usuario](#editar-los-datos-de-la-cuenta-de-usuario)
 - Parcelas
