@@ -3,7 +3,7 @@ Proyecto final para la materia de sistemas distribuidos. Este API permite estima
 
 ## Contenido
 - General
-  - **[Guía rápida de cómo utilizar el API](#guia-rapida-de-como-utilizar-el-api)**
+  - **[Guía rápida de cómo utilizar el API](#guía-rápida-de-cómo-utilizar-el-api)**
   - [Interactuando con el API](#interactuando-con-el-api)
 - Cuentas de Usuario
   - [Crear una Cuenta de Usuario](#crear-una-cuenta-de-usuario)
