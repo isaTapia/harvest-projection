@@ -252,7 +252,7 @@ Para borrar una parcela se tiene el sig. servicio.
 
 Si una parcela está actualmente siendo utilizada por algún cultivo, entonces la parcela **no** puede borrarse.
 
-# Crear un nuevo Producto
+## Crear un nuevo Producto
 Los productos representan las hortalizas que pueden ser cultivadas en una parcela. Cada usuario puede tener registrado cualquier cantidad de productos que desee. La teoría dice que, una vez que una hortaliza es plantada para su cultivo, su crecimiento diario es directamente proporcional a la cantidad de horas calóricas que absorbió cada día. Dichas horas calóricas son acumulables. Así, la hortaliza alcanza la madurez una vez que la cantidad de horas calóricas que fueron acumuladas por la planta cruza un umbral determinado. Los principales datos de un producto son: 
 
 - Un **intervalo de temperatura de tolerancia**, esto es, los límites de temperatura máximo y mínimo dentro de los cuáles la planta puede absorber horas calóricas. Si la temperatura de un día particular no está dentro de estos límites, la planta _no_ absorbe horas calóricas.
