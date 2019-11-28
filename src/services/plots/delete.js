@@ -22,11 +22,13 @@ module.exports = ServicesFactory.createCustomService(async (request, response) =
   const searchFilter = { plot: plot._id }
   const cropsList = await Crop.find(searchFilter)
   if (cropsList) {
-    throw createError(
-      'DeletionDenied', 
-      'Unable to delete plot; there are active crops using it',
-      400
-    )
+    if (cropsList.length > 0) {
+      throw createError(
+        'DeletionDenied', 
+        'Unable to delete plot; there are active crops using it',
+        400
+      )
+    }
   }
 
   const user = await User.findById(userId)
